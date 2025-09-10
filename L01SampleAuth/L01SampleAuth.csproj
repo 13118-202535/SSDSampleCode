@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-L01SampleAuth-6336bcd7-9c3a-4cbd-9be1-f32d4a29e946</UserSecretsId>
   </PropertyGroup>
