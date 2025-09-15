@@ -6,11 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using L01SampleAuth.Models;
+    using System.Security.Claims;
 
 namespace L01SampleAuth.Data
 {
     public static class DbInitializer
     {
+        public static AppSecrets appSecrets { get; set; }
         public static async Task<int> SeedUsersAndRoles(IServiceProvider serviceProvider)
         {
             // create the database if it doesn't exist
@@ -67,7 +69,7 @@ namespace L01SampleAuth.Data
                 LastName = "Admin",
                 EmailConfirmed = true
             };
-            var result = await userManager.CreateAsync(adminUser, "Password!1");
+            var result = await userManager.CreateAsync(adminUser, appSecrets.AdminPassword);
             if (!result.Succeeded)
                 return 1;  // should log an error message here
 
@@ -75,6 +77,11 @@ namespace L01SampleAuth.Data
             result = await userManager.AddToRoleAsync(adminUser, "Admin");
             if (!result.Succeeded)
                 return 2;  // should log an error message here
+
+            // Assign country claim to user
+            result = await userManager.AddClaimAsync(adminUser, new Claim(ClaimTypes.Country, "Canada"));
+            if (!result.Succeeded)
+                return 5;  // should log an error message here
 
             // Create Member User
             var memberUser = new ApplicationUser
@@ -85,7 +92,7 @@ namespace L01SampleAuth.Data
                 LastName = "Member",
                 EmailConfirmed = true
             };
-            result = await userManager.CreateAsync(memberUser, "Password!1");
+            result = await userManager.CreateAsync(memberUser, appSecrets.MemberPassword);
             if (!result.Succeeded)
                 return 3;  // should log an error message here
 

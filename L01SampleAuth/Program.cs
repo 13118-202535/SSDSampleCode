@@ -1,5 +1,7 @@
 using L01SampleAuth.Data;
+using L01SampleAuth.Helpers;
 using L01SampleAuth.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,9 +24,30 @@ namespace L01SampleAuth
                 .AddDefaultTokenProviders()
                 .AddDefaultUI();
 
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("MohawkAdmin", policy =>
+                {
+                    policy.RequireRole("Admin");
+                    //policy.RequireClaim(ClaimTypes.Email, "support@mohawkcollege.ca");
+                    policy.Requirements.Add(new EmailDomainRequirement("mohawkcollege.ca"));
+                });
+            });
+            builder.Services.AddSingleton<IAuthorizationHandler, EmailDomainHandler>();
+
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
+
+            //Initialize app secrets
+            var configuration = app.Services.GetService<IConfiguration>();
+            var hosting = app.Services.GetService<IWebHostEnvironment>();
+
+            if (hosting.IsDevelopment())
+            {
+                var secrets = configuration.GetSection("Secrets").Get<AppSecrets>();
+                DbInitializer.appSecrets = secrets;
+            }
 
             using (var scope = app.Services.CreateScope())
             {
