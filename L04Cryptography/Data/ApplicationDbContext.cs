@@ -11,5 +11,6 @@ namespace L04Cryptography.Data
         {
         }
         public DbSet<L04Cryptography.Models.Password> Password { get; set; } = default!;
+        public DbSet<L04Cryptography.Models.BankAccount> BankAccount { get; set; } = default!;
     }
 }
